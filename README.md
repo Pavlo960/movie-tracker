@@ -1,18 +1,18 @@
 # Movie Tracker
 
-Django-застосунок для обліку фільмів, режисерів та жанрів із відстеженням статусу перегляду.
+Django application for tracking movies, directors, and genres with watch status management.
 
-## Моделі
-- Director — режисер (ім'я, країна, дата народження)
-- Genre — жанр
-- Movie — фільм (ForeignKey на Director, ManyToMany на Genre, статус через choices)
+## Models
+- Director — director (name, country, birth date)
+- Genre — genre
+- Movie — movie (ForeignKey to Director, ManyToMany to Genre, status via choices)
 
-## Як запустити
+## How to run
 python -m venv venv
 .\venv\Scripts\activate
 pip install django
 python manage.py migrate
 python manage.py runserver
 
-## Скріншот адмінки
+## Admin screenshot
 ![admin](screenshots/screenshot.png)

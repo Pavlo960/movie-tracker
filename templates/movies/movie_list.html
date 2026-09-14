@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Каталог фільмів{% endblock %}
+
+{% block content %}
+    <h1 style="margin-bottom: 1.5rem; font-size: 1.75rem;">Каталог фільмів</h1>
+
+    <main class="grid">
+        {% for movie in movies %}
+            <article class="card">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <h2 style="font-size: 1.25rem;">{{ movie.title }}</h2>
+                        <span class="status-badge status-{{ movie.status }}">
+                            {{ movie.get_status_display }}
+                        </span>
+                    </div>
+
+                    <div style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.75rem;">
+                        <span>{{ movie.release_date|date:"Y" }}</span> • 
+                        <span>{{ movie.duration }} хв</span>
+                        {% if movie.director %}
+                            • <span>{{ movie.director.name }}</span>
+                        {% endif %}
+                    </div>
+
+                    {% if movie.genre.all %}
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.85rem;">
+                            {% for g in movie.genre.all %}
+                                <span class="genre-tag">{{ g.name }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <p style="color: #cbd5e1; font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.25rem;">
+                        {% if movie.description %}
+                            {{ movie.description|truncatewords:15 }}
+                        {% else %}
+                            <em style="color: var(--text-muted);">Опис відсутній</em>
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div>
+                    <a href="{% url 'movie_detail' movie.pk %}" class="btn" style="width: 100%;">Детальніше</a>
+                </div>
+            </article>
+        {% empty %}
+            <div class="empty-state">
+                <p>Фільмів у трекері поки немає.</p>
+            </div>
+        {% endfor %}
+    </main>
+{% endblock %}

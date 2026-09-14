@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Список режисерів{% endblock %}
+
+{% block content %}
+    <h1 style="margin-bottom: 1.5rem; font-size: 1.75rem;">Режисери</h1>
+
+    <main class="grid">
+        {% for director in directors %}
+            <article class="card">
+                <div>
+                    <h2 style="font-size: 1.25rem; margin-bottom: 0.5rem;">{{ director.name }}</h2>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">
+                        Країна: <strong style="color: var(--text-main);">{{ director.country }}</strong>
+                    </p>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+                        Дата народження: {{ director.birth_date|date:"d.m.Y" }}
+                    </p>
+
+                    <h3 style="font-size: 0.95rem; margin-bottom: 0.5rem; color: var(--accent);">Фільми в базі:</h3>
+                    <ul style="padding-left: 1.2rem; font-size: 0.85rem; color: #cbd5e1; line-height: 1.5;">
+                        {% for movie in director.movies.all %}
+                            <li>
+                                <a href="{% url 'movie_detail' movie.pk %}" style="color: var(--text-main); text-decoration: none;">
+                                    {{ movie.title }} ({{ movie.release_date|date:"Y" }})
+                                </a>
+                            </li>
+                        {% empty %}
+                            <li style="color: var(--text-muted);">Фільмів цього режисера ще немає.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </article>
+        {% empty %}
+            <div class="empty-state">
+                <p>Режисерів у базі поки немає.</p>
+            </div>
+        {% endfor %}
+    </main>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ movie.title }} | Деталі{% endblock %}
+
+{% block content %}
+    <div style="max-width: 800px; margin: 0 auto;">
+        <a href="{% url 'movie_list' %}" style="display: inline-block; color: var(--accent); text-decoration: none; margin-bottom: 1rem; font-weight: 600;">← Назад до каталогу</a>
+
+        <article class="card" style="padding: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 0.75rem;">
+                <h1 style="font-size: 2rem;">{{ movie.title }}</h1>
+                <span class="status-badge status-{{ movie.status }}">
+                    {{ movie.get_status_display }}
+                </span>
+            </div>
+
+            <div style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.25rem;">
+                <span>{{ movie.release_date|date:"d.m.Y" }}</span> • 
+                <span>{{ movie.duration }} хв</span>
+            </div>
+
+            {% if movie.genre.all %}
+                <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.5rem;">
+                    {% for g in movie.genre.all %}
+                        <span class="genre-tag">{{ g.name }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <h2 style="font-size: 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.4rem; margin-bottom: 0.75rem;">Опис сюжету</h2>
+            <p style="color: #cbd5e1; line-height: 1.6; margin-bottom: 1.5rem;">
+                {% if movie.description %}
+                    {{ movie.description }}
+                {% else %}
+                    <em style="color: var(--text-muted);">Опис для цього фільму поки що не додано.</em>
+                {% endif %}
+            </p>
+
+            <h2 style="font-size: 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.4rem; margin-bottom: 0.75rem;">Інформація про режисера</h2>
+            {% if movie.director %}
+                <div style="background: rgba(15, 23, 42, 0.6); padding: 1rem; border-radius: 8px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;">
+                    <div>
+                        <span style="display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Ім'я</span>
+                        <strong>{{ movie.director.name }}</strong>
+                    </div>
+                    <div>
+                        <span style="display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Країна</span>
+                        <strong>{{ movie.director.country }}</strong>
+                    </div>
+                    <div>
+                        <span style="display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Дата народження</span>
+                        <strong>{{ movie.director.birth_date|date:"d.m.Y" }}</strong>
+                    </div>
+                </div>
+            {% else %}
+                <p style="color: var(--text-muted);">Режисер не вказаний.</p>
+            {% endif %}
+        </article>
+    </div>
+{% endblock %}

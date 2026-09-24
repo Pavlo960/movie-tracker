@@ -36,4 +36,4 @@ python manage.py runserver
 Coming soon
 
 ## Screenshot
-![Movie Tracker Screenshot](media\avatars\Screenshot_2025-03-18_201202.png)
+![Movie Tracker Screenshot](screenshots\photo_2026-09-24_17-31-10.jpg)

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Genres List{% endblock %}
+
+{% block content %}
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h1 style="margin: 0; font-size: 1.75rem;">Genres</h1>
+        <a href="{% url 'genre_create' %}" class="btn" style="background-color: var(--price-tag); color: #0f172a;">+ Add Genre</a>
+    </div>
+
+    <main class="grid">
+        {% for genre in genres %}
+            <article class="card" style="align-items: center; text-align: center;">
+                <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;">{{ genre.name }}</h2>
+                <a href="{% url 'genre_detail' genre.pk %}" class="btn" style="width: 100%;">View Movies</a>
+            </article>
+        {% empty %}
+            <div class="empty-state">
+                <p>No genres yet.</p>
+            </div>
+        {% endfor %}
+    </main>
+
+    {% if is_paginated %}
+        <div class="pagination" style="display: flex; flex-direction: column; align-items: center; gap: 1rem; margin-top: 3rem;">
+            <div style="display: flex; gap: 1.5rem; align-items: center;">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" class="btn" style="background: transparent; border: 1px solid var(--accent); color: var(--accent);">&larr; Back</a>
+                {% endif %}
+                <span style="color: var(--text-muted); font-weight: 500;">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </span>
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="btn" style="background: transparent; border: 1px solid var(--accent); color: var(--accent);">Next &rarr;</a>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

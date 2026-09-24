@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 400px; margin: 3rem auto; padding: 2.5rem; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); border-radius: 12px; text-align: center;">
+    <h1 style="margin-bottom: 1.5rem; font-size: 1.8rem; font-weight: 600;">Create Account</h1>
+    
+    <form method="post" style="display: flex; flex-direction: column; gap: 1.2rem; text-align: left;">
+        {% csrf_token %}
+        <div style="line-height: 1.8; color: var(--text-muted);">
+            {{ form.as_p }}
+        </div>
+        <button type="submit" class="btn" style="margin-top: 1rem; width: 100%; padding: 0.75rem; font-size: 1rem; font-weight: 500;">Sign Up</button>
+    </form>
+</div>
+{% endblock %}

@@ -37,3 +37,6 @@ Coming soon
 
 ## Screenshot
 ![Movie Tracker Screenshot](screenshots/photo_2026-09-24_17-31-10.jpg)
+
+## Admin Dashboard screenshot
+!(screenshots\photo_2026-09-24_17-58-11.jpg)

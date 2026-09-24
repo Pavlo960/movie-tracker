@@ -27,7 +27,7 @@ class Genre(models.Model):
     
 class Movie(models.Model):
     STATUS_CHOICES = [
-        ('want', 'liked'),
+        ('want', 'want to watch'),
         ('watching', 'watching'),
         ('watched', 'watched'),
     ]

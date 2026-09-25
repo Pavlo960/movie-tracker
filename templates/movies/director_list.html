@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Directors List{% endblock %}
+
+{% block content %}
+    <!-- This panel should be HERE, before the list, not inside the cards -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h1 style="margin: 0; font-size: 1.75rem;">Directors</h1>
+        <a href="{% url 'director_create' %}" class="btn" style="background-color: var(--accent); color: #0f172a;">+ Add Director</a>
+    </div>
+
+    <main class="grid">
+        {% for director in directors %}
+            <article class="card">
+                <div>
+                    <h2 style="font-size: 1.25rem; margin-bottom: 0.5rem;">{{ director.name }}</h2>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">
+                        Country: <strong style="color: var(--text-main);">{{ director.country }}</strong>
+                    </p>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+                        Birth date: {{ director.birth_date|date:"d.m.Y" }}
+                    </p>
+
+                    <h3 style="font-size: 0.95rem; margin-bottom: 0.5rem; color: var(--accent);">Movies in database:</h3>
+                    <ul style="padding-left: 1.2rem; font-size: 0.85rem; color: #cbd5e1; line-height: 1.5;">
+                        {% for movie in director.movies.all %}
+                            <li>
+                                <a href="{% url 'movie_detail' movie.pk %}" style="color: var(--text-main); text-decoration: none;">
+                                    {{ movie.title }} ({{ movie.release_date|date:"Y" }})
+                                </a>
+                            </li>
+                        {% empty %}
+                            <li style="color: var(--text-muted);">No movies by this director yet.</li>
+                        {% endfor %}
+                    </ul>
+                    
+                    <!-- Added details button to navigate to the page with delete/edit buttons -->
+                    <div style="margin-top: 1.5rem;">
+                        <a href="{% url 'director_detail' director.pk %}" class="btn" style="width: 100%; font-size: 0.9rem;">Details</a>
+                    </div>
+                </div>
+            </article>
+        {% empty %}
+            <div class="empty-state">
+                <p>No directors in the database yet.</p>
+            </div>
+        {% endfor %}
+    </main>
+{% endblock %}

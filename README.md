@@ -9,10 +9,15 @@ Django application for tracking movies, directors, and genres with watch status 
 
 ## How to run
 python -m venv venv
-.\venv\Scripts\activate
-pip install django
+# On Linux/macOS:
+source venv/bin/activate
+# On Windows:
+venv\Scripts\activate
+pip install -r requirements.txt
+cp .env.example .env        
 python manage.py migrate
 python manage.py runserver
+```
 
 ## Admin screenshot
 ![admin](screenshots/screenshot.png)

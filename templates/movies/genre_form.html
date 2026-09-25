@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto; margin-top: 2rem;">
+    <h2 style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        {% if object %}
+            Edit Genre «{{ object.name }}»
+        {% else %}
+            🏷️ Add New Genre
+        {% endif %}
+    </h2>
+
+    <form method="post" style="display: flex; flex-direction: column; gap: 1rem;">
+        {% csrf_token %}
+        
+        <div style="line-height: 2; color: var(--text-muted);">
+            {{ form.as_p }}
+        </div>
+
+        <button type="submit" class="btn" style="margin-top: 1rem;">Save Genre</button>
+        
+        <a href="javascript:history.back()" style="text-align: center; color: var(--text-muted); text-decoration: none; margin-top: 1rem;">
+            Cancel
+        </a>
+    </form>
+</div>
+{% endblock %}

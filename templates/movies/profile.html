@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ user.username }} | Profile{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 0 auto;">
+    <h1 style="font-size: 2rem; margin-bottom: 1.5rem;">User Profile</h1>
+
+    <!-- Картка статистики -->
+    <div style="background: var(--card-bg); border: 1px solid rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 12px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+        <div>
+            <span style="display: block; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Username</span>
+            <strong style="font-size: 1.25rem;">{{ user.username }}</strong>
+        </div>
+        <div>
+            <span style="display: block; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Movies Created</span>
+            <strong style="font-size: 1.25rem; color: var(--accent);">{{ total_movies_count }}</strong>
+        </div>
+        <div>
+            <span style="display: block; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Watch Time</span>
+            <strong style="font-size: 1.25rem; color: #34d399;">{{ total_hours }} hrs</strong>
+        </div>
+    </div>
+
+    <!-- Картка завантаження аватара -->
+    <div style="background: var(--card-bg); border: 1px solid rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; display: flex; align-items: center; gap: 1.5rem;">
+        <div>
+            {% if user.profile.avatar %}
+                <img src="{{ user.profile.avatar.url }}" alt="Avatar" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent);">
+            {% else %}
+                <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--accent); color: #0f172a; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold;">
+                    {{ user.username|slice:":1"|upper }}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div style="flex: 1;">
+            <h2 style="font-size: 1.2rem; margin-bottom: 0.5rem;">Profile Avatar</h2>
+            <form method="post" enctype="multipart/form-data" style="display: flex; gap: 1rem; align-items: center;">
+                {% csrf_token %}
+                <!-- Ховаємо стандартний уродський інпут -->
+                <input type="file" name="avatar" id="avatar-input" accept="image/*" style="display: none;" required>
+                
+                <!-- Робимо стильну кнопку-тригер -->
+                <button type="button" class="btn" onclick="document.getElementById('avatar-input').click();" style="padding: 0.4rem 1rem; font-size: 0.9rem; background: transparent; border: 1px solid var(--accent); color: var(--accent);">
+                    Choose File
+                </button>
+                
+                <!-- Напис, який покаже назву вибраного файлу -->
+                <span id="file-name" style="font-size: 0.85rem; color: var(--text-muted);">No file chosen</span>
+                
+                <button type="submit" class="btn" style="padding: 0.4rem 1rem; font-size: 0.9rem; margin-left: auto;">Upload</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Картка налаштування теми (Жива палітра) -->
+    <div style="background: var(--card-bg); border: 1px solid rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem;">
+        <h2 style="font-size: 1.2rem; margin-bottom: 1rem;">Theme Customization</h2>
+        
+        <form id="theme-form" style="display: flex; flex-direction: column; gap: 1.25rem;">
+            <!-- Вибір фону сайту -->
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <input type="color" name="bg" id="bg-picker" value="{{ request.session.user_bg|default:'#0f172a' }}" style="width: 45px; height: 40px; border: none; border-radius: 8px; background: transparent; cursor: pointer;">
+                <div>
+                    <span style="display: block; font-size: 0.9rem; font-weight: 500;">Background Color</span>
+                    <span style="display: block; font-size: 0.75rem; color: var(--text-muted);">choose any background color</span>
+                </div>
+            </div>
+
+            <!-- Вибір акценту для кнопок -->
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <input type="color" name="accent" id="accent-picker" value="{{ request.session.user_accent|default:'#38bdf8' }}" style="width: 45px; height: 40px; border: none; border-radius: 8px; background: transparent; cursor: pointer;">
+                <div>
+                    <span style="display: block; font-size: 0.9rem; font-weight: 500;">Buttons Accent</span>
+                    <span style="display: block; font-size: 0.75rem; color: var(--text-muted);">choose color for accents and buttons</span>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Список Watchlist -->
+    <h2 style="font-size: 1.4rem; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">My Watchlist</h2>
+    
+    {% if watchlist_movies %}
+        <div class="grid" style="margin-bottom: 3rem;">
+            {% for movie in watchlist_movies %}
+                <article class="card" {% if movie.poster_url %}style="background: linear-gradient(180deg, rgba(15, 23, 42, 0.75) 0%, rgba(15, 23, 42, 0.92) 80%), url('{{ movie.poster_url }}') center/cover no-repeat;"{% endif %}>
+                    <div>
+                        <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem;">{{ movie.title }}</h3>
+                        <div style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">
+                            <span>{{ movie.release_date|date:"Y" }}</span> • <span>{{ movie.duration }} min</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <a href="{% url 'movie_detail' movie.pk %}" class="btn" style="flex: 1; padding: 0.4rem; font-size: 0.85rem;">Details</a>
+                        <a href="{% url 'toggle_watchlist' movie.pk %}" class="btn" style="background: transparent; border: 1px solid #ef4444; color: #ef4444; padding: 0.4rem 0.7rem; font-size: 0.85rem;" title="Remove">✕</a>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p style="color: var(--text-muted); margin-bottom: 3rem;">Your watchlist is currently empty. Go add some movies!</p>
+    {% endif %}
+</div>
+
+<!-- Скрипт миттєвого збереження кольорів на льоту -->
+<script>
+    document.querySelectorAll('#theme-form input[type="color"]').forEach(input => {
+        input.addEventListener('change', function() {
+            const formData = new FormData(document.getElementById('theme-form'));
+            const params = new URLSearchParams(formData);
+
+            fetch(`{% url 'change_theme' %}?${params.toString()}`)
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    }
+                });
+        });
+    });
+    document.getElementById('avatar-input').addEventListener('change', function() {
+        const fileName = this.files[0] ? this.files[0].name : 'No file chosen';
+        document.getElementById('file-name').textContent = fileName;
+    });
+    
+</script>
+{% endblock %}

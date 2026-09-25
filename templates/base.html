@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Movie Tracker{% endblock %}</title>
+    <style>
+        :root {
+            --bg-color: {{ request.session.user_bg|default:"#0f172a" }};
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: {{ request.session.user_accent|default:"#38bdf8" }};
+            --accent-hover: #0284c7;
+
+            /* решта статусів */
+            --status-want-bg: rgba(251, 191, 36, 0.15);
+            --status-want-text: #fbbf24;
+            --status-want-border: rgba(251, 191, 36, 0.3);
+            --status-watching-bg: rgba(56, 189, 248, 0.15);
+            --status-watching-text: #38bdf8;
+            --status-watching-border: rgba(56, 189, 248, 0.3);
+            --status-watched-bg: rgba(52, 211, 153, 0.15);
+            --status-watched-text: #34d399;
+            --status-watched-border: rgba(52, 211, 153, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+        }
+
+        /* Navigation panel */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        /* General components */
+        .btn {
+            display: inline-block;
+            text-align: center;
+            text-decoration: none;
+            background-color: var(--accent);
+            color: #0f172a;
+            font-weight: 600;
+            padding: 0.65rem 1rem;
+            border-radius: 8px;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+            color: #ffffff;
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.6rem;
+            border-radius: 9999px;
+            white-space: nowrap;
+        }
+
+        .status-want { background-color: var(--status-want-bg); color: var(--status-want-text); border: 1px solid var(--status-want-border); }
+        .status-watching { background-color: var(--status-watching-bg); color: var(--status-watching-text); border: 1px solid var(--status-watching-border); }
+        .status-watched { background-color: var(--status-watched-bg); color: var(--status-watched-text); border: 1px solid var(--status-watched-border); }
+
+        .genre-tag {
+            font-size: 0.75rem;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-muted);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .empty-state {
+            text-align: center;
+            grid-column: 1 / -1;
+            padding: 3rem 0;
+            color: var(--text-muted);
+        }
+
+        /* Form input styles */
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            margin-top: 0.25rem;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        form p {
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="{% url 'movie_list' %}" class="nav-logo">🎬 MovieTracker</a>
+            
+            <div class="nav-links">
+                <a href="{% url 'movie_list' %}">Movies</a>
+                <a href="{% url 'director_list' %}">Directors</a>
+                <a href="{% url 'genre_list' %}">Genres</a>
+
+                <span style="color: rgba(255,255,255,0.2);">|</span>
+
+                {% if user.is_authenticated %}
+                    <a href="{% url 'my_movies' %}">My Movies</a>
+                    
+                    <!-- Блок з аватаркою та ім'ям -->
+                    <a href="{% url 'profile' %}" style="display: flex; align-items: center; gap: 0.5rem; text-decoration: none; color: inherit;">
+                        {% if user.profile.avatar %}
+                            <img src="{{ user.profile.avatar.url }}" alt="Avatar" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid var(--accent);">
+                        {% else %}
+                            <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #0f172a; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold;">
+                                {{ user.username|slice:":1"|upper }}
+                            </div>
+                        {% endif %}
+                        <span style="font-weight: 600;">{{ user.username }}</span>
+                    </a>
+                    
+                    <form method="post" action="{% url 'logout' %}" style="margin: 0;">
+                        {% csrf_token %}
+                        <button type="submit" style="background: transparent; border: 1px solid #ef4444; color: #ef4444; padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s;">
+                            Log Out
+                        </button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}">Sign In</a>
+                    <a href="{% url 'signup' %}" class="btn" style="padding: 0.4rem 1rem;">Sign Up</a>
+                {% endif %}
+            </div>
+        </nav>
+
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

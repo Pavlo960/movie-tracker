@@ -33,3 +33,6 @@ python manage.py runserver
 
 ## Admin screenshot
 ![admin](screenshots/photo_2026-09-24_17-58-11.jpg)
+
+## Live demo
+Cooming soon...

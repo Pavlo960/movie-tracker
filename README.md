@@ -19,4 +19,4 @@ python manage.py migrate
 python manage.py runserver
 
 ## Admin screenshot
-![admin](screenshots/screenshot.png)
+![admin](screenshots/photo_2026-09-24_17-58-11.jpg)
